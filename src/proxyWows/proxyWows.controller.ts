@@ -1,5 +1,4 @@
-
-import { Controller, Get, Header, Request } from '@nestjs/common';
+import { Controller, Get, Header, Options, Post, Request } from '@nestjs/common';
 import { ProxyWowsService } from './proxyWows.service';
 
 @Controller('proxyWows')
@@ -8,13 +7,25 @@ export class ProxyWowsController {
 
   @Get('getProxyWowsData')
   @Header('Cache-Control', 'no-store')
-  findAll(@Request() req: any): any {
+  @Header('Access-Control-Allow-Origin', '*')
+  findAll(): any {
     return this.proxyWowsService.getProxyWowsData();
   }
 
   @Get('*')
-  @Header('Cache-Control', 'no-store')
-  proxyGet(@Request() req: any): Promise<any> {
+  // @Header('Access-Control-Allow-Origin', '*')
+  proxyGet(@Request() req): Promise<any> {
     return this.proxyWowsService.proxyGet(req.url);
+  }
+
+  @Post('*')
+  // @Header('Access-Control-Allow-Origin', '*')
+  proxyPost(@Request() req): Promise<any> {
+    return this.proxyWowsService.proxyPost(req);
+  }
+
+  @Options('*')
+  options() {
+    return;
   }
 }
