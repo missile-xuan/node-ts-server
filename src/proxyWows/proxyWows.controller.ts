@@ -1,4 +1,11 @@
-import { Controller, Get, Header, Options, Post, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Header,
+  Options,
+  Post,
+  Request,
+} from '@nestjs/common';
 import { ProxyWowsService } from './proxyWows.service';
 
 @Controller('proxyWows')

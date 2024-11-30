@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { ProxyWowsController } from './proxyWows.controller';
 import { ProxyWowsService } from './proxyWows.service';
 import { SetHeaderMiddleware } from './proxyWows.middleware';
