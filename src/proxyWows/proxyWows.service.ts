@@ -7,13 +7,19 @@ export class ProxyWowsService {
     [key: string]: { timestamp: number; active: boolean; data: any };
   } = {};
 
+  /**
+   * get请求转发
+   * @param url 转发地址
+   * @returns
+   */
   async proxyGet(url: string) {
     // 拆分url 提取转发内容
     const urlParts = url.split('/proxyWows')[1];
     // 如果缓存中有数据，且未过期，且未被占用，则直接返回数据
     if (
       this.proxyWowsData[urlParts] &&
-      this.proxyWowsData[urlParts].timestamp + 1000 * 60 * 20 > Date.now() &&
+      this.proxyWowsData[urlParts].timestamp + 1000 * 60 * 60 * 6 >
+        Date.now() &&
       !this.proxyWowsData[urlParts].active
     ) {
       return this.proxyWowsData[urlParts].data;
@@ -65,13 +71,19 @@ export class ProxyWowsService {
     }
   }
 
+  /**
+   * post请求转发
+   * @param req
+   * @returns
+   */
   async proxyPost(req: any) {
     // 拆分url 提取转发内容
     const urlParts = req.url.split('/proxyWows')[1];
     // 如果缓存中有数据，且未过期，且未被占用，则直接返回数据
     if (
       this.proxyWowsData[urlParts] &&
-      this.proxyWowsData[urlParts].timestamp + 1000 * 60 * 20 > Date.now() &&
+      this.proxyWowsData[urlParts].timestamp + 1000 * 60 * 60 * 6 >
+        Date.now() &&
       !this.proxyWowsData[urlParts].active
     ) {
       return this.proxyWowsData[urlParts].data;
@@ -105,7 +117,7 @@ export class ProxyWowsService {
       return new Promise((resolve, reject) => {
         axios({
           method: 'post',
-          headers: req.headers,
+          // headers: req.headers,
           data: req.body,
           url: process.env.PROXY_SHINOAKI + urlParts,
         })
@@ -128,6 +140,7 @@ export class ProxyWowsService {
   }
 
   getProxyWowsData() {
-    return this.proxyWowsData;
+    const keys = Object.keys(this.proxyWowsData);
+    return keys;
   }
 }

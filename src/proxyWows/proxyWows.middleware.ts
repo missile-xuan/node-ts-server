@@ -10,7 +10,7 @@ export class SetHeaderMiddleware implements NestMiddleware {
   use(req: Request, res: Response, next: NextFunction) {
     Logger.log(
       '====================',
-      req.headers.host,
+      req.headers['x-forwarded-for'],
       req.baseUrl,
       req.url,
       req.path,
