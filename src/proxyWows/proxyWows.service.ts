@@ -3,6 +3,7 @@ import axios from 'axios';
 
 @Injectable()
 export class ProxyWowsService {
+  private hitNum = 0;
   private readonly proxyWowsData: {
     [key: string]: { timestamp: number; active: boolean; data: any };
   } = {};
@@ -22,6 +23,7 @@ export class ProxyWowsService {
         Date.now() &&
       !this.proxyWowsData[urlParts].active
     ) {
+      this.hitNum++;
       return this.proxyWowsData[urlParts].data;
     }
     // 如果缓存中没有数据，先创建基础结构
@@ -37,8 +39,13 @@ export class ProxyWowsService {
       return new Promise((resolve, reject) => {
         const interval = setInterval(() => {
           if (!this.proxyWowsData[urlParts].active) {
-            if (this.proxyWowsData[urlParts].data.length > 10) {
+            if (
+              this.proxyWowsData[urlParts].data !== null &&
+              this.proxyWowsData[urlParts].data !== undefined &&
+              Object.keys(this.proxyWowsData[urlParts].data).length > 0
+            ) {
               clearInterval(interval);
+              this.hitNum++;
               resolve(this.proxyWowsData[urlParts].data);
             } else {
               clearInterval(interval);
@@ -54,10 +61,20 @@ export class ProxyWowsService {
         axios
           .get(process.env.PROXY_SHINOAKI + urlParts)
           .then((res) => {
-            this.proxyWowsData[urlParts].data = res.data;
-            this.proxyWowsData[urlParts].timestamp = Date.now();
-            this.proxyWowsData[urlParts].active = false;
-            resolve(res.data);
+            if (
+              res.data === null ||
+              res.data === undefined ||
+              Object.keys(res.data).length < 1
+            ) {
+              reject('get转发获取失败');
+              this.proxyWowsData[urlParts].active = false;
+              this.proxyWowsData[urlParts].data = undefined;
+            } else {
+              this.proxyWowsData[urlParts].data = res.data;
+              this.proxyWowsData[urlParts].timestamp = Date.now();
+              this.proxyWowsData[urlParts].active = false;
+              resolve(res.data);
+            }
           })
           .catch((err) => {
             this.proxyWowsData[urlParts].active = false;
@@ -86,6 +103,7 @@ export class ProxyWowsService {
         Date.now() &&
       !this.proxyWowsData[urlParts].active
     ) {
+      this.hitNum++;
       return this.proxyWowsData[urlParts].data;
     }
     // 如果缓存中没有数据，先创建基础结构
@@ -101,8 +119,13 @@ export class ProxyWowsService {
       return new Promise((resolve, reject) => {
         const interval = setInterval(() => {
           if (!this.proxyWowsData[urlParts].active) {
-            if (this.proxyWowsData[urlParts].data.length > 10) {
+            if (
+              this.proxyWowsData[urlParts].data !== null &&
+              this.proxyWowsData[urlParts].data !== undefined &&
+              Object.keys(this.proxyWowsData[urlParts].data).length > 0
+            ) {
               clearInterval(interval);
+              this.hitNum++;
               resolve(this.proxyWowsData[urlParts].data);
             } else {
               clearInterval(interval);
@@ -122,10 +145,20 @@ export class ProxyWowsService {
           url: process.env.PROXY_SHINOAKI + urlParts,
         })
           .then((res) => {
-            this.proxyWowsData[urlParts].data = res.data;
-            this.proxyWowsData[urlParts].timestamp = Date.now();
-            this.proxyWowsData[urlParts].active = false;
-            resolve(res.data);
+            if (
+              res.data === null ||
+              res.data === undefined ||
+              Object.keys(res.data).length < 1
+            ) {
+              reject('get转发获取失败');
+              this.proxyWowsData[urlParts].active = false;
+              this.proxyWowsData[urlParts].data = undefined;
+            } else {
+              this.proxyWowsData[urlParts].data = res.data;
+              this.proxyWowsData[urlParts].timestamp = Date.now();
+              this.proxyWowsData[urlParts].active = false;
+              resolve(res.data);
+            }
           })
           .catch((err) => {
             this.proxyWowsData[urlParts].active = false;
@@ -141,6 +174,10 @@ export class ProxyWowsService {
 
   getProxyWowsData() {
     const keys = Object.keys(this.proxyWowsData);
-    return keys;
+    return {
+      cacheCount: keys.length,
+      hitNum: this.hitNum,
+      keys: keys,
+    };
   }
 }
