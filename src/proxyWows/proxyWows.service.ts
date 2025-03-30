@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
-
+axios.defaults.timeout = 1000 * 60;
 @Injectable()
 export class ProxyWowsService {
   private hitNum = 0;
@@ -82,6 +82,7 @@ export class ProxyWowsService {
             reject(err);
           })
           .finally(() => {
+            this.proxyWowsData[urlParts].active = false;
             reject('finally error');
           });
       });
@@ -163,9 +164,12 @@ export class ProxyWowsService {
           .catch((err) => {
             this.proxyWowsData[urlParts].active = false;
             Logger.error(err);
+            Logger.error(`process.env.PROXY_SHINOAKI:${process.env.PROXY_SHINOAKI}`);
+            Logger.error(urlParts);
             reject(err);
           })
           .finally(() => {
+            this.proxyWowsData[urlParts].active = false;
             reject('finally error');
           });
       });
