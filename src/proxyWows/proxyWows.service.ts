@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
-import https from 'https';
+import * as https from 'https';
 axios.defaults.timeout = 1000 * 60;
 
 const cusAxios = axios.create({
