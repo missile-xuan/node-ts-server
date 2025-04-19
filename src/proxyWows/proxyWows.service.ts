@@ -1,6 +1,15 @@
 import { Injectable, Logger } from '@nestjs/common';
 import axios from 'axios';
+import https from 'https';
 axios.defaults.timeout = 1000 * 60;
+
+const cusAxios = axios.create({
+  baseURL: process.env.baseURL,
+  timeout: 1000 * 60,
+  withCredentials: true,
+  httpsAgent: new https.Agent({ rejectUnauthorized: false }),
+});
+
 @Injectable()
 export class ProxyWowsService {
   private hitNum = 0;
@@ -58,7 +67,7 @@ export class ProxyWowsService {
       // 未被占用则发起请求
       this.proxyWowsData[urlParts].active = true;
       return new Promise((resolve, reject) => {
-        axios
+        cusAxios
           .get(process.env.PROXY_SHINOAKI + urlParts)
           .then((res) => {
             if (
@@ -139,7 +148,7 @@ export class ProxyWowsService {
       // 未被占用则发起请求
       this.proxyWowsData[urlParts].active = true;
       return new Promise((resolve, reject) => {
-        axios({
+        cusAxios({
           method: 'post',
           // headers: req.headers,
           data: req.body,
